@@ -1,0 +1,353 @@
+---
+title: "Bookdown - A Short Introduction to R"
+author: "João Pedro"
+date: "`r format(Sys.time(), '%d, %B, %Y')`"
+output: 
+  html_document:
+    code_folding: hide
+    keep_md: true
+    css: styles.css
+    toc: true
+    toc_depth: 4
+    theme: united
+    highlight: tango
+---
+
+**Packages**
+
+```{r, include = FALSE}
+library(bookdown)
+```
+
+## List element in R
+
+### Creating List
+
+```{r}
+Name <- c("Pedro", "Lilian")
+RollNum <- c(23, 24)
+
+sample_list <- list(Name, RollNum)
+sample_list
+```
+
+### Name List Element in R
+
+```{r}
+names(sample_list) <- c("Name", "Roll_Num")
+sample_list
+```
+
+### Accessing Elements of List
+
+```{r}
+sample_list[1]
+sample_list$Name
+sample_list[1][1]
+```
+
+## Vectors
+
+### Creating Vectors
+
+```{r}
+c(1, 4, 7)
+
+# Check length of the vector
+length(c(1, 4, 7))
+
+# Assign to a variable
+Num_variable <- c (1, 4, 7)
+
+# Vector Names, containing names of person appearing in an Exam
+Names <- c("Pedro", "Lilian", "Dirlene")
+
+# Extract the first element of Names vector.
+Names[1]
+
+# Creating another vector and them combining
+Missed_names <- c("Luis", "Rafael")
+
+# Including Missed_names in the Names vector
+Names <- c(Names, Missed_names)
+Names
+```
+
+### Class of Vector
+
+R possesses a simple generic function mechanism which can be used for an object-oriented style of programming. Method dispatch takes place based on the class of the first argument to the generic function.
+
+typeof determines the (R internal) type or storage mode of any object
+
+```{r}
+class(Names)
+class(Num_variable)
+typeof(Num_variable)
+```
+
+### Adding Vectors of different type
+
+The mix_vector we created had multiple data types-Numeric and Character, however R converts the multiple data type to a single data type through a process called coercion. Logical values are converted to numbers: TRUE is converted to 1 and FALSE to 0.
+
+- Values are converted to the simplest type required to represent all information.
+- The ordering is roughly logical < integer < numeric < complex < character < list
+- Objects of type raw are not converted to other types.
+- Objects can also be explicitly coerced using “as.”" function. For example to coerce mix vector to numeric use:-
+
+```{r}
+mix_vector <- c(1, 2, "Pedro")
+class(mix_vector)
+mix_vector <- as.numeric(mix_vector)
+```
+
+```{r}
+Names[1] <- "Roberto" # Changing the first element of a vector
+```
+
+### Accessing elements of vectors
+
+```{r}
+Names[-1]
+Names[c(-1, -2)] # All elements except the first and second elements will be printed. We can also save it, this will remove the first 2 Names
+```
+
+### Creating vector using in Built Functions
+
+Create a sequential vector from 1 to 10 which increases by 1 in length
+
+```{r}
+seq(1, 10, by = 1) 
+```
+
+Create a sequential vector from 1 to 10 which increases by 0.5 in length
+
+```{r}
+seq(1, 10, by = 0.5) 
+```
+
+### Lets try to repeat vectors
+
+```{r}
+rep(c(1, 2), times = c(5, 5))
+```
+
+- typeof(Vector): This method tells you the data type of the vector.
+- Sort(Vector): This method helps us to sort the items in the Ascending order.
+- length(Vector): This method counts the number of elements in a vector.
+- head(Vector, limit): This method return the top six elements (if you Omit the limit). If you specify the limit as 4 then, it returns the first 4 elements.
+- tail(Vector, limit): It returns the last six elements (if you Omit the limit). If you specify the limit as 2, then it returns the last two elements.
+
+### Arithmetic Operator in Vectors in R
+
+```{r}
+V1 <- c(1, 2, 3, 4)
+V2 <- c(5, 6, 7, 8)
+```
+
+Perform addition
+
+```{r}
+V1 + V2
+```
+
+Operation was performed elementwise. First element of V1 was added to the first element of V2
+
+```{r}
+V12_division <- V2 / V1
+V12_division
+typeof(V12_division)
+```
+
+Converting to Numeric
+
+```{r}
+V12_division <- as.integer(V12_division)
+```
+
+## Logical operations in R
+
+Checks if both variables are equal/grater/grater than or equal. If true, then returns TRUE else FALSE
+
+```{r}
+a <- 2
+b <- 3
+a == b
+a > b
+a >= b
+a <= b
+```
+
+```{r}
+a <- c(1, 2, 3, 4)
+b <- c(5, 6, 7, 8,)
+c <- c(1, 2, 3, 4)
+d <- c(1, 2, 5, 6)
+e <- c(1, 2)
+```
+
+When we perform Logical Operation in Vectors the operations is elementwise and cyclical. 
+
+```{r}
+a == b
+a==c
+b==d
+a>b
+b>a
+```
+
+### Comparing vectors of different length?
+
+When applying an operation to two vectors that requires them to be the same length, R automatically recycles, or repeats, elements of the shorter one, until it is long enough to match the longer Vector.
+
+```{r}
+a>e
+a>=e
+b>=e
+```
+
+### Logical operands in R
+
+```{r}
+ab <- a&b
+ab
+```
+
+## Matrices
+
+Matrices are two-dimensional data structures in R and are arranged in a rectangular layout. Matrices can contain only one data type. We can create matrices of any of the six data types we discussed before. A matrix can also be thought of as a vector in two dimension.
+
+```{r}
+matrix(1:6, nrow = 3, ncol = 2)
+matrix(1:6, 3,2)
+```
+
+As you have guessed from the above output, R will automatically pick the number of rows and columns based on the order of input. Let’s specify one of the dimension (either col or row) and see the output
+
+```{r}
+matrix(1:6, ncol = 3)
+```
+
+```{r}
+M <- matrix(1:20, ncol = 4)
+colnames(M) <- c("A", "B", "C", "D")
+rownames(M) <- c("E", "F", "G", "H", "I")
+M
+```
+
+```{r}
+M["F", "D"]
+M[, "D"]
+```
+
+### Extracting Row/Column from Matrices
+
+```{r}
+M[2, c(1, 3)] 
+```
+
+### Operations in Matrices
+
+```{r}
+M1 <- matrix(1:15, nrow = 5)
+M1
+M2 <- matrix(1:15, nrow = 5)
+M2
+M3 <- matrix(2:10, nrow = 5)
+M3
+```
+Additon Operation on Matrices of same dimension
+
+```{r}
+M1 + M2
+M1 * M2
+```
+What if want to add Matrices of different dimensions? We can check dimension of Matrices using dim function
+
+```{r}
+dim(M1)
+dim(M3)
+```
+As a basic rule for matrix multiplication number of rows of Matrix1 should be equal to number of columns in Matrix2 when multiplying Matrix1 with Matrix2. 
+
+```{r}
+M4 <- matrix(1:9, nrow = 3)
+M5 <- matrix(10:18, nrow = 3)
+M4
+M5
+```
+Result of matrix multiplication
+
+```{r}
+M4%*%M5
+```
+
+You can see the elementwise operation result in R.
+
+```{r}
+M4*M5
+M1/M2
+```
+
+What if one of the matrices’ row or column is shorter than the other? Will recycling occur?
+
+As an exercise create a 3X3 matrices and add it to M1.
+
+```{r, eval = TRUE}
+M3x <- matrix(1:9, nrow = 3)
+M3x
+M1
+M3x + M1
+```
+
+### Transposing a Matrix
+
+You may also want to transpose your data in R. This is used to interchange rows and columns i.e rows become columns and columns become rows in new transposed matrix For example.
+
+```{r}
+M1
+M3 <- t(M1)
+M3
+```
+
+As you can see from the output, the rows have become columns and the columns have become rows. This can also be used to reshape a DataFrame.
+
+### Common Matrix Operations in R
+
+Sum of rows in Matrix
+
+```{r}
+rowSums(M1)
+```
+
+Sum of columns in Matrix
+
+```{r}
+colSums(M1)
+```
+
+Mean of rows in Matrix
+
+```{r}
+rowMeans(M1)
+```
+
+### Naming Matrix row and column
+
+```{r}
+rownames(M4) <- c("A", "B", "C")
+colnames(M4) <- c("D", "E", "F")
+M4
+```
+
+We can also extract specific elements of a Matrix by specifying row and columns
+
+```{r}
+M4[3, ]
+M4[, 3]
+M4[2, 3]
+```
+
+### DataFrames
+
+### What is a Data Frame?
+
