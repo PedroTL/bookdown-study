@@ -558,7 +558,7 @@ In practice, we often don’t need to deal with the connection interface directl
 
 For example, if one were to explicitly use connections to read a CSV file in to R, it might look like this
 
-```{r}
+```{r, eval = FALSE}
 ## Create a connection to 'foo.txt'
 con <- file("foo.txt")
 
@@ -574,7 +574,7 @@ close(con)
 
 which is the same as
 
-```{r}
+```{r, eval = FALSE}
 data <- read.csv("foo.txt")
 ```
 
@@ -584,7 +584,7 @@ The above example shows the basic approach to using connections. Connections mus
 
 Text files can be read line by line using the readLines() function. This function is useful for reading text files that may be unstructured or contain non-standard data.
 
-```{r}
+```{r, eval = FALSE}
 ## Open connection to gz-compressed text file
 con <- gzfile("words.gz")
 x <- readLines(con, 10)
@@ -603,7 +603,7 @@ The readLines() function can be useful for reading in lines of webpages. Since w
 
 This code might take time depending on your connection speed.
 
-```{r}
+```{r, eval = FALSE}
 ## Open a URL connection for reading
 con <- url("https//www.jhu.edu", "r")
 
@@ -799,7 +799,9 @@ x <- list(aardvark = 1:5)
 x$a
 
 x[["a"]]
+```
 
+```{r, eval = FALSE}
 x[["a", extract = FALSE]]
 ```
 
@@ -905,7 +907,7 @@ Exercise 1: Using dput and dump<br>
 a) Create a numeric vector with random values and use dput to save it into a file named "my_vector.R".<br>
 b) Create a data frame with random values and use dump to save it into a file named "my_data.R".<br>
 
-```{r}
+```{r, eval = FALSE}
 ## A
 my_vector <- c(1, 2, 3.2)
 dput(my_vector, 
@@ -956,7 +958,8 @@ my_matrix
 na_matrix <- complete.cases(my_matrix)
 na_matrix
 
-my_matrix[na_matrix]
+my_matrix[na_matrix, ]
+my_matrix[, na_matrix]
 ```
 
 
@@ -964,6 +967,576 @@ Exercise 4: Subsetting Lists and Removing NAs <br>
 a) Create a list with multiple elements, including some NA values.<br>
 b) Use subsetting to extract the elements that are not NA.<br>
 
+```{r}
+my_list <- list(letters = c("a", "b", NA, "c", NA),
+                numbers = c(1, NA, 3, 4, NA))
+
+na_list <- complete.cases(my_list)
+na_list
+
+my_list[[1]][na_list]
+my_list[[2]][na_list]
+my_list[[c(1, 2)]]
+my_list[[1]][[2]]
+```
+
+
 Exercise 5: Subsetting Data Frames and Removing NAs<br>
 a) Create a data frame with some NA values in different columns.<br>
 b) Use subsetting to extract rows where all columns have non-NA values.<br>
+
+```{r}
+my_df <- data.frame(numbers = c(2.2, 1, NA, 3, NA),
+                    letters = c("a", NA, NA, "c", "d"),
+                    rambom = c(1, 2, 3, 4, 5))
+my_df
+
+my_df<- my_df[complete.cases(my_df), ]
+```
+
+## 9. Dates and Times
+
+R has developed a special representation for dates and times. Dates are represented by the Date class and times are represented by the POSIXct or the POSIXlt class. Dates are stored internally as the number of days since 1970-01-01 while times are stored internally as the number of seconds since 1970-01-01.
+
+### 9.1 Date in R
+
+Dates are represented by the Date class and can be coerced from a character string using the as.Date() function. This is a common way to end up with a Date object in R.
+
+```{r}
+## Coerce a Date object from character
+x <- as.Date("1970-01-01")
+x
+```
+
+You can see the internal representation of a Date object by using the unclass() function.
+
+```{r}
+unclass(x)
+```
+
+### 9.2 Times in R
+
+Times are represented by the POSIXct or the POSIXlt class. POSIXct is just a very large integer under the hood. It use a useful class when you want to store times in something like a data frame. POSIXlt is a list underneath and it stores a bunch of other useful information like the day of the week, day of the year, month, day of the month. This is useful when you need that kind of information.
+
+There are a number of generic functions that work on dates and times to help you extract pieces of dates and/or times.
+
+- weekdays: give the day of the week
+- months: give the month name
+- quarters: give the quarter number (“Q1”, “Q2”, “Q3”, or “Q4”)
+
+Times can be coerced from a character string using the as.POSIXlt or as.POSIXct function.
+
+```{r}
+x <- Sys.time()
+x
+
+class(x) ## POSIXct
+```
+
+The POSIXlt object contains some useful metadata.
+
+```{r}
+p <- as.POSIXlt(x)
+names(unclass(p))
+
+p$wday
+```
+
+You can also use the POSIXct format.
+
+```{r}
+x <- Sys.time()
+x ## Already in POSIXct format
+
+unclass(x) # Internal representation
+```
+
+```{r, eval = FALSE}
+x$sec # Can`t do this with POSIXct
+```
+
+```{r}
+p <- as.POSIXlt(x)
+p$sec # Thats better
+```
+
+Finally, there is the strptime() function in case your dates are written in a different format. strptime() takes a character vector that has dates and times and converts them into to a POSIXlt object.
+
+```{r}
+datestring <- c("January 10, 2012, 10:40", "December 9, 2011 9:10")
+x <- strptime(datestring, "%B %d, %Y %H:%M")
+x
+class(x)
+```
+
+The weird-looking symbols that start with the % symbol are the formatting strings for dates and times. I can never remember the formatting strings. Check ?strptime for details. It’s probably not worth memorizing this stuff.
+
+### 9.3 Operations on Dates and Times
+
+You can use mathematical operations on dates and times. Well, really just + and -. You can do comparisons too (i.e. ==, <=)
+
+```{r}
+x <- as.Date("2012-01-01")
+y <- 2
+x-y
+```
+
+```{r}
+x <- as.POSIXlt(x)
+x-y
+```
+
+The nice thing about the date/time classes is that they keep track of all the annoying things about dates and times, like leap years, leap seconds, daylight savings, and time zones.
+
+Here’s an example where a leap year gets involved.
+
+```{r}
+x <- as.Date("2012-03-01")
+y <- as.Date("2012-02-28")
+x-y
+```
+
+Here’s an example where two different time zones are in play (unless you live in GMT timezone, in which case they will be the same!).
+
+```{r}
+## My local time zone
+x <- as.POSIXct("2012-10-25 01:00:00")
+y <- as.POSIXct("2012-10-25 60:00:00", tz = "GMT")
+y-x
+```
+
+## 10. Managing Data Frame with the dplyr package
+
+```{r}
+library(gamair)
+library(tidyverse)
+data(chicago)
+str(chicago)
+chicago <- chicago %>%
+  mutate(city = "chic")
+```
+
+### select()
+
+The select() function can be used to select columns of a data frame that you want to focus on. Often you’ll have a large data frame containing “all” of the data, but any given analysis might only use a subset of variables or observations. The select() function allows you to get the few columns you might need.
+
+```{r}
+names(chicago)[1:3]
+subset <- select(chicago, death:pm25median)
+```
+
+Note that the : normally cannot be used with names or strings, but inside the select() function you can use it to specify a range of variable names.
+
+You can also omit variables using the select() function by using the negative sign. With select() you can do
+
+```{r}
+select(chicago, -(death:pm25median))
+```
+
+which indicates that we should include every variable except the variables death through pm25median The equivalent code in base R would be
+
+```{r}
+i <- match("death", names(chicago))
+j <- match("pm25median", names(chicago))
+head(chicago[, -(i:j)])
+```
+
+The select() function also allows a special syntax that allows you to specify variable names based on patterns. So, for example, if you wanted to keep every variable that ends with a “n”, we could do
+
+```{r}
+subset <- select(chicago, ends_with("n"))
+str(subset)
+```
+
+Or if we wanted to keep every variable that starts with a “p”, we could do
+
+```{r}
+subset <- select(chicago, starts_with("p"))
+str(subset)
+```
+
+### filter()
+
+The filter() function is used to extract subsets of rows from a data frame. This function is similar to the existing subset() function in R but is quite a bit faster in my experience.
+
+Suppose we wanted to extract the rows of the chicago data frame where the levels of tmpd are greater than 25 (which is a reasonably high level), we could do
+
+```{r}
+chic.f <- filter(chicago, tmpd > 25)
+str(chic.f)
+summary(chic.f$tmpd)
+```
+
+We can place an arbitrarily complex logical sequence inside of filter()
+
+```{r}
+chic.f <- filter(chicago, tmpd > 25 & death > 100)
+str(chic.f)
+```
+
+### arrange()
+
+The arrange() function is used to reorder rows of a data frame according to one of the variables/columns. Reordering rows of a data frame (while preserving corresponding order of other columns) is normally a pain to do in R.
+
+Here we can order the rows of the data frame by date, so that the first row is the lowest death observation and the last row is the largest observation.
+
+```{r}
+chicago <- arrange(chicago, death)
+head(chicago)
+tail(chicago)
+```
+
+```{r}
+chicago <- arrange(chicago, desc(death))
+head(chicago)
+tail(chicago)
+```
+
+### rename()
+
+Renaming a variable in a data frame in R is surprisingly hard to do! The rename() function is designed to make this process easier.
+
+```{r}
+head(chicago[, 1:8], 4)
+```
+
+```{r}
+chicago <- rename(chicago, pm25 = pm25median)
+```
+
+The syntax inside the rename() function is to have the new name on the left-hand side of the = sign and the old name on the right-hand side.
+
+### mutate()
+
+The mutate() function exists to compute transformations of variables in a data frame. Often, you want to create new variables that are derived from existing variables and mutate() provides a clean interface for doing that.
+
+Here we create a pm25detrend variable that subtracts the mean from the pm25 variable.
+
+```{r}
+chicago <- mutate(chicago, pm25detrend = pm25 - mean(pm25, na.rm = TRUE))
+```
+
+There is also the related transmute() function, which does the same thing as mutate() but then drops all non-transformed variables.
+
+```{r}
+head(transmute(chicago,
+               pm10detrend = pm10median - mean(pm10median, na.rm = TRUE),
+               o3detrend = o3median - mean(o3median, na.rm = TRUE)))
+```
+
+### group_by()
+
+The group_by() function is used to generate summary statistics from the data frame within strata defined by a variable. For example, in this air pollution dataset, you might want to know what the average annual level of PM2.5 is. So the stratum is the year, and that is something we can derive from the date variable. In conjunction with the group_by() function we often use the summarize() function (or summarise() for some parts of the world).
+
+The general operation here is a combination of splitting a data frame into separate pieces defined by a variable or group of variables (group_by()), and then applying a summary function across those subsets (summarize()).
+
+```{r}
+days <- group_by(chicago, time)
+summarize(days, pm25 = mean(pm25, na.rm = TRUE),
+          o3median = max(o3median),
+          .groups = "drop")
+```
+
+summarize() returns a data frame with days as the first column, and then the annual averages of pm25 and o3 max.
+
+In a slightly more complicated example, we might want to know what are the average levels of ozone (o3) and nitrogen dioxide (no2) within quintiles of pm25. A slicker way to do this would be through a regression model, but we can actually do this quickly with group_by() and summarize().
+
+```{r}
+qq <- quantile(chicago$pm25,
+               seq(0, 1, 0.2), 
+               na.rm = TRUE)
+chicago <- mutate(chicago, pm25.quint = cut(pm25, qq))
+```
+
+Now we can group the data frame by the pm25.quint variable.
+
+```{r}
+quint <- group_by(chicago, pm25.quint)
+```
+
+```{r}
+summarize(quint, 
+          o3 = mean(o3median, 
+                    na.rm = TRUE),
+          o2 = mean(so2median,
+                    na.rm = TRUE),
+          .groups = "drop")
+```
+
+The pipeline operater %>% is very handy for stringing together multiple dplyr functions in a sequence of operations. Notice above that every time we wanted to apply more than one function, the sequence gets buried in a sequence of nested function calls that is difficult to read, i.e.
+
+```{r, eval = FALSE}
+third(second(first(x)))
+```
+
+```{r, eval = FALSE}
+first(x) %>%
+  second %>%
+  third
+```
+
+Take the example that we just did in the last section where we computed the mean of o3 and no2 within quintiles of pm25. There we had to
+
+create a new variable pm25.quint
+split the data frame by that new variable
+compute the mean of o3 and no2 in the sub-groups defined by pm25.quint
+
+```{r}
+mutate(chicago, pm25.quint = cut(pm25, qq)) %>%
+  group_by(pm25.quint) %>%
+  summarize(o3 = mean(o3median, na.rm = TRUE),
+            so2 = mean(so2median, na.rm = TRUE),
+            .groups = "drop")
+```
+
+This way we don’t have to create a set of temporary variables along the way or create a massive nested sequence of function calls.
+
+Notice in the above code that I pass the chicago data frame to the first call to mutate(), but then afterwards I do not have to pass the first argument to group_by() or summarize(). Once you travel down the pipeline with %>%, the first argument is taken to be the output of the previous element in the pipeline.
+
+## Control Structures *
+
+Control structures in R allow you to control the flow of execution of a series of R expressions. Basically, control structures allow you to put some “logic” into your R code, rather than just always executing the same R code every time. Control structures allow you to respond to inputs or to features of the data and execute different R expressions accordingly.
+
+Commonly used control structures are
+
+- if and else: testing a condition and acting on it
+- for: execute a loop a fixed number of times
+- while: execute a loop while a condition is true
+- repeat: execute an infinite loop (must break out of it to stop)
+- break: break the execution of a loop
+- next: skip an interation of a loop
+
+### if else
+
+The if-else combination is probably the most commonly used control structure in R (or perhaps any language). This structure allows you to test a condition and act on it depending on whether it’s true or false.
+
+```{r, eval = FALSE}
+if(condition) {
+  ## do something
+} else {
+  ## do something else
+} else {
+  ## do something else
+}
+
+## continue code
+```
+
+```{r}
+## Generate a uniform random number
+x <- runif(1, 0, 10)
+
+if(x > 3) {
+  y <- 10 
+} else { 
+  y <- 0
+}
+```
+
+The value of y is set depending on whether x > 3 or not. This expression can also be written a different, but equivalent, way in R.
+
+```{r}
+y <- if(x > 3) {
+  10
+} else {
+  0
+}
+```
+
+Of course, the else clause is not necessary. You could have a series of if clauses that always get executed if their respective conditions are true.
+
+```{r, eval = FALSE}
+if(condition1) {
+  
+  
+} 
+
+if(condition2){ 
+  
+}
+```
+
+### for loops
+
+For loops are pretty much the only looping construct that you will need in R. While you may occasionally find a need for other types of loops, in my experience doing data analysis, I’ve found very few situations where a for loop wasn’t sufficient.
+
+In R, for loops take an interator variable and assign it successive values from a sequence or vector. For loops are most commonly used for iterating over the elements of an object (list, vector, etc.)
+
+```{r}
+for(i in 1:10) { 
+  print(i)
+}
+```
+
+This loop takes the i variable and in each iteration of the loop gives it values 1, 2, 3, …, 10, executes the code within the curly braces, and then the loop exits.
+
+The following three loops all have the same behavior.
+
+```{r}
+x <- c("a", "b", "c", "d")
+
+for(i in 1:4) {
+  ## Print out each element of x
+  print(x[i])
+}
+```
+
+The seq_along() function is commonly used in conjunction with for loops in order to generate an integer sequence based on the length of an object (in this case, the object x).
+
+```{r}
+## Generate a sequence based on length of x
+for(i in seq_along(x)) {
+  print(x[i])
+}
+```
+
+It is not necessary to use an index-type variable.
+
+```{r}
+for(letter in x) {
+  print(letter)
+}
+```
+
+For one line loops, the curly braces are not strictly necessary.
+
+```{r}
+for(i in 1:4) print(x[i])
+```
+
+### Nested for loops
+
+for loops can be nested inside of each other.
+
+```{r}
+x <- matrix(1:6, 2, 3)
+
+for(i in seq_len(nrow(x))) {
+  for(j in seq_len(ncol(x))) {
+    print(x[i, j])
+  }
+}
+```
+
+### while loops
+
+While loops begin by testing a condition. If it is true, then they execute the loop body. Once the loop body is executed, the condition is tested again, and so forth, until the condition is false, after which the loop exits.
+
+```{r}
+count <- 0
+
+while(count < 10) {
+  print(count)
+  count <- count +1
+}
+```
+
+```{r}
+z <- 5
+set.seed(1)
+
+while(z >= 3 && z <= 10) {
+  coin <- rbinom(1, 1, 0.5)
+  
+  if(coin == 1) { ## Random walk
+    z <- z +1
+  } else {
+    z <- z -1
+  }
+}
+print(z)
+```
+
+Conditions are always evaluated from left to right. For example, in the above code, if z were less than 3, the second test would not have been evaluated.
+
+### repeat loops
+
+repeat initiates an infinite loop right from the start. These are not commonly used in statistical or data analysis applications but they do have their uses. The only way to exit a repeat loop is to call break.
+
+One possible paradigm might be in an iterative algorith where you may be searching for a solution and you don’t want to stop until you’re close enough to the solution. In this kind of situation, you often don’t know in advance how many iterations it’s going to take to get “close enough” to the solution.
+
+```{r, eval = FALSE}
+x0 <- 1
+tol <- 1e-8
+
+repeat {
+  x1 <- computeEstimate()
+  
+  if(abs(x1 - x0) < tol) { ## close enough?
+    break
+  } else {
+      x0 <- x1
+    }
+}
+```
+
+### next, break
+
+next is used to skip an iteration of a loop.
+
+```{r}
+for(i in 1:100) {
+  if (i <= 20) {
+    ## Skip the first 20 iterations
+    next
+  }
+  ## Do something here
+  if (i > 15) {
+    break
+  }
+}
+```
+
+break is used to exit a loop immediately, regardless of what iteration the loop may be on.
+
+```{r}
+for (i in 1:100){
+  print(i)
+  
+  if(i > 20) {
+    ## Stop loop after 20 iterations
+    break
+  }
+}
+```
+
+### Exercises for loops and if else
+
+Exercise 1: Use a for loop to print the names of all columns in the mtcars dataframe.
+
+```{r}
+data(mtcars)
+for (i in seq_along(mtcars)) {
+  names <- colnames(mtcars[i])
+  print(names)
+}
+```
+
+
+Exercise 2: Use a for loop to calculate the mean of each column in the mtcars dataframe.
+
+Exercise 3: Use a for loop to count how many cars in the mtcars dataframe have more than 100 horsepower (hp column).
+
+Exercise 4: Use a while loop to print the unique values of the cyl column in the mtcars dataframe.
+
+Exercise 5: Use a while loop to calculate the cumulative sum of the mpg column in the mtcars dataframe.
+
+Exercise 6: Use if-else statements to create a new column in the mtcars dataframe called "fuel_efficiency," where cars with mpg greater than 20 are labeled "efficient" and others are labeled "inefficient."
+
+Exercise 7: Use a for loop to print the names of columns in the mtcars dataframe, but skip printing the column "carb."
+
+Exercise 8: Use a while loop to find the first car in the mtcars dataframe with more than 200 horsepower (hp column).
+
+Exercise 9: Use if-else statements to create a new column in the mtcars dataframe called "high_power," where cars with more than 150 horsepower are labeled TRUE and others are labeled FALSE.
+
+Exercise 10: Use a for loop to calculate the product of all values in the wt column of the mtcars dataframe.
+
+Exercise 11: Use a while loop to print the names of columns in the mtcars dataframe until you encounter the column "qsec."
+
+Exercise 12: Use if-else statements to create a new column in the mtcars dataframe called "gear_type," where cars with 4 gears are labeled "four_gears," with 3 gears are labeled "three_gears," and with 5 gears are labeled "five_gears."
+
+Exercise 13: Use a for loop to calculate the mean of each row in the mtcars dataframe.
+
+Exercise 14: Use a while loop to find the first car in the mtcars dataframe with more than 25 miles per gallon (mpg column).
+
+Exercise 15: Use if-else statements to create a new column in the mtcars dataframe called "cyl_category," where cars with 4 cylinders are labeled "four_cylinder," with 6 cylinders are labeled "six_cylinder," and with 8 cylinders are labeled "eight_cylinder."
