@@ -16,7 +16,7 @@ output:
 **Packages**
 
 ```{r, include = FALSE}
-library(bookdown)
+library(tidyverse)
 ```
 
 ## List element in R
@@ -179,7 +179,7 @@ a <= b
 
 ```{r}
 a <- c(1, 2, 3, 4)
-b <- c(5, 6, 7, 8,)
+b <- c(5, 6, 7, 8)
 c <- c(1, 2, 3, 4)
 d <- c(1, 2, 5, 6)
 e <- c(1, 2)
@@ -292,7 +292,7 @@ What if one of the matrices’ row or column is shorter than the other? Will rec
 
 As an exercise create a 3X3 matrices and add it to M1.
 
-```{r, eval = TRUE}
+```{r, eval = FALSE}
 M3x <- matrix(1:9, nrow = 3)
 M3x
 M1
@@ -351,3 +351,218 @@ M4[2, 3]
 
 ### What is a Data Frame?
 
+DataFrame is a two-dimensional labelled data structure which can have columns of multiple data types. Imagine you have a spread sheet that contains stock related information.We can use data.frame function to create a dataframe in R programming. Lets create a dataframe with 3 rows and two columns.
+
+```{r}
+Data <- data.frame(
+  stock_name = c("AACL", "AAK", "MANI"),
+  date = as.Date(c("11-3-2020", "12-3-2020", "12-3-2020")),
+  Price = c(12,3,224),
+  stringsAsFactors = FALSE
+)
+
+Data
+class(Data)
+```
+
+```{r}
+data()
+data(mtcars)
+head(mtcars)
+head(mtcars, 3)
+tail(mtcars)
+```
+
+We can also use mtcars data to perform few operations in mtcars:- Lets check mtcars’s number of columns and rows
+
+```{r}
+ncol(mtcars)
+nrow(mtcars)
+?mtcars
+summary(mtcars)
+str(Data)
+```
+
+## Functions in R
+
+### Inbuilt functions in R
+
+Functions have arguments, which are a kind of placeholder. Let’s say we want to create a function that can add three numbers. While writing this function we need to pass argument to the function. In following case, i have passed arguments as a,b and c.
+
+```{r}
+addition <- function(a, b, c) {
+  a+b+c
+}
+
+addition(1,2,3)
+```
+
+Let’s create a function to convert Fahrenheit to degree Celsius. General expression to convert Fahrenheit to celsius is Celsius,c =(5/9)*(Fahrenheit-32) The function takes Fahrenheit as input and returns output in degree Celsius.
+
+```{r}
+DegreeToFahrenheit <- function(F){
+  (5/9) * (F-32)
+}
+DegreeToFahrenheit(100)
+```
+
+### Functions without Arguments
+
+```{r}
+cube_of_n <- function() {
+  for(x in 1:3) {
+    print(x^3)
+  }
+}
+cube_of_n()
+```
+
+## Apply Family Functions
+
+### apply()
+
+apply function takes three arguments apply(X,Margin,FUN) where X is an array or matrix, Margin takes value of 1 or 2 where it implies whether to apply the function row wise or column wise and FUN shows what kind of function to apply such as sum, mean, median etc.
+
+```{r}
+M1 <- matrix(C <- (1:15), nrow=5)
+M1
+```
+
+Lets apply “apply” function to fins sum of columns of matrix M1
+
+```{r}
+M1_colsum <- apply(M1, 2, sum)
+M1_colsum
+```
+
+We can also use apply function to find mean of all columns
+
+```{r}
+M1_colmean <- apply(M1, 2, mean)
+M1_colmean
+```
+
+Similarly we can use apply function to find maximum value of each column in R matrices.
+
+```{r}
+M1_colmax <- apply(M1, 2, max)
+M1_colmax
+```
+
+### lapply()
+
+Lapply is applied for operations on a list of objects and returns a list object of same length.
+
+Lets see application of lapply on a list:
+
+```{r}
+Names <- c("Pedro", "Lilian", "Roberto", "Dirlene", "Paulo")
+Names_lower <- lapply(Names, tolower)
+Names_lower
+```
+
+```{r}
+Names <- c("Pedro", "Lilian", "Roberto", "Dirlene", "Paulo")
+Names_upper <- lapply(Names, toupper)
+Names_upper
+```
+
+### sapply()
+
+sapply takes a list vector or dataframe as an input and returns the output in vector or matrix form Lets use sapply function in the previous example and check the result:
+
+```{r}
+Names <- c("Pedro", "Lilian", "Roberto", "Dirlene", "Paulo")
+Names_lower <- lapply(Names, tolower)
+Names_lower
+```
+
+As you can see from the output using sapply, the result is in a matrix form.
+
+### tapply()
+
+tapply() applies function or operation on subset of vector broken down by a given factor variable. Let’s load iris dataset and tapply on iris dataset.
+
+```{r}
+data(iris)
+summary(iris)
+```
+
+```{r}
+tapply(iris$Sepal.Length, iris$Species, mean)
+```
+
+In our iris dataset we have three types of species and we want to calculate average Sepal Length for each of the Species.
+
+Similarly, we can calculate median Sepal Length for the three types of species.
+
+## Exercises  
+
+Exercise 1: Apply Function to Each Row in a Data Frame. Given a data frame df with columns "A" and "B" and "C", calculate the sum of each row and store the results in a new column "Sum" in the same data frame.
+
+```{r}
+df <- data.frame(A = c(3, 5, 3),
+                 B = c(4, 5, 2),
+                 C = c(12, 3, 1))
+
+df$sum <-apply(df, 1, function(x) sum(x))
+```
+
+Exercise 2: lapply to Perform Element-wise Operation on a List. Create a list my_list with three numeric vectors. Use lapply to square each element of the vectors and return a new list with the squared elements.
+
+```{r}
+my_list <- as.list(as.numeric(c(1, 3, 4)))
+my_vector <- as.numeric(c(1, 3, 4))
+
+new_list <- lapply(my_list, function(x) x^2)
+new_list2 <- lapply(my_vector, function(x) x^2)
+```
+
+Exercise 3: Use function to Extract Diagonal Elements of a Matrix. Create a square matrix my_matrix (e.g., 3x3).
+
+```{r}
+Matrix <- matrix(data= 1:9, nrow = 3, ncol = 3)
+Matrix
+
+a <- function (x) {
+  result <- numeric(0)
+  for(i in 1:nrow(x)) {
+    for(j in 1:ncol(x)) {
+      if (i == j) {
+        result <- c(result, x[i, j])
+      }
+    }
+  }
+result
+}
+
+b <- function (x) {
+  x^2
+}
+
+b(Matrix)
+```
+
+Exercise 4: tapply to Calculate the Mean by Groups. Given a data frame df with columns "Group" and "Value", use tapply to calculate the mean value for each group in the "Group" column.
+
+```{r}
+df2 <- data.frame(Group = c("A", "B", "C", "A", "B", "C"),
+                  Value = c(11, 33, 22, 12, 31, 12))
+
+Group <- df2$Group
+
+tapply(df2$Value, Group, mean)
+```
+
+Exercise 5: Apply Function to Specific Columns in a Data Frame. Given a data frame df with columns "A", "B", "C", and "D", use apply to calculate the maximum value for columns "A" and "B", and the minimum value for columns "C" and "D" separately.
+
+```{r}
+df3 <- data.frame(A = as.numeric(c(1, 3, 5)),
+                  B = as.numeric(c(2, 3, 11)),
+                  C = as.numeric(c(3, 4, 6)),
+                  D = as.numeric(c(4, 2, 1)))
+df3
+
+apply(df3[, 1:2], 2, function(x) max(x)) 
+apply(df3[, 3:4], 2, function(x) min(x)) 
+```
