@@ -165,8 +165,9 @@ $A$ is a 2x3 and $B$ is a $3x10$, then you can multiply this matrices. However, 
 
 The resulting dimentions of $C = A*B$:
 
--   The number of rows of $A$ is the number of rows of $C$.
--   The number of columns of $B$ is the number of rows of $C$
+- The number of rows of $A$ is the number of rows of $C$.
+- The number of columns of $B$ is the number of rows of $C$
+- In a 2x3 * 3x10 the result matrix will be 2x10
 
 ![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_4.png)
 
@@ -224,24 +225,24 @@ An inner product produces a scalar value. If you wanted a $MXMX'$, one can use t
 MX%o%MX
 ```
 
-Exercices
+Exercices - Using the `GPA` dataset to see how High School score could be use as an independent variable `X` to predict College Scores `Y`.
 
 - Find $X'$, $X'X$, $X'Y$ and $Y'Y$
 
 ```{r}
-data(mtcars)
-head(mtcars)
+gpa <- read.csv2(url("https://raw.githubusercontent.com/PedroTL/bookdown-study/main/introduction-multivariated-analysis-r/Banco%20de%20Dados/gpa.csv"), sep = ",") |>
+  dplyr::mutate_if(is.character, as.numeric)
 ```
 
 Where `mpg` is $X$ and `drat` is $Y$ 
 
 ```{r}
-X <- cbind(1, mtcars$mpg)
+X <- cbind(1, gpa$HSGPA)
 head(X)
 ```
 
 ```{r}
-Y <- mtcars$drat
+Y <- gpa$CollegeGPA
 head(Y)
 ```
 
@@ -277,4 +278,206 @@ t(Y) %*% Y
 
 - `cbind()` combines items by *columns*
 - `rbind()` combines items by *rows*
+
+**Special types of matrices**
+
+Symmetric matrix - If $A$ = $A'$, then $A$ is symmetric
+
+```{r}
+MA <- matrix(data = c(1, 2, 2, 3),
+             nrow = 2, 
+             ncol = 2,
+             byrow = TRUE)
+MA
+
+t(MA)
+```
+
+Diagonal Matrix - A square matrix whose *off-diagonal* elements are 0. 
+
+- The diagonal of a matrix are the $(1,1)$, $(2,2)$, $(3,3)$ elements.
+
+```{r}
+MA <- matrix(data = c(1, 0, 0, 0, 1, 0, 0, 0, 1),
+             nrow = 3,
+             ncol = 3,
+             byrow = TRUE)
+MA
+```
+
+
+Identity Matrix - A diagonal matrix whose *diagonals* elements are 1. 
+
+- The diagonal of a matrix are the $(1,1)$, $(2,2)$, $(3,3)$ elements.
+
+```{r}
+MI <- matrix(data = c(1, 1, 2, 3, 1, 0, 0, 0, 1),
+             nrow = 3,
+             ncol = 3,
+             byrow = TRUE)
+MI
+```
+
+Note that $I$ (The letter, not the number) usually denotes the identity matrix.
+
+If we multiply a matrix $A$ of same dimentions of a matrix $I$ we get as a result matrix $A$, thats why is *identity*
+
+Vectors of 0's - Vector that only contains zeros
+
+**Linear dependence and rank of matrix**
+
+Let $A$ think of each column of $A$ as a vector; i.e., $A = [a_1 a_2, a_3]$. Note that $3a_2 = a_3$. This means the columns of $A$ are *linearly dependent*.
+
+Formally, a set of column vectors are linearly dependent if there exists constants $\lambda_1, \lambda_2, ..., \lambda_c$ (not all zero), such that $\lambda_1a_1 + \lambda_2a_2 + ... + \lambda_ca_c = 0$. A set of column vectors are linearly independent if $\lambda_1a_1 + \lambda_2a_2 + ... + \lambda_ca_c = 0$, only for $\lambda_1 = \lambda_2 = ... = \lambda_c = 0$.
+
+The rank of matrix in the maximum number of linearly independent columns in the matrix.
+
+$rank(A) = 2$
+
+If a matrix does not have a rank equal to the number of its columns, this can cause problems in some of our calculations.
+
+```{r}
+MA <- matrix(data = c(1, 2, 6, 3, 4, 12, 5, 6, 18),
+             nrow = 3, 
+             ncol = 3,
+             byrow = TRUE)
+MA
+```
+
+**Inverse of a Matrix**
+
+The inverse of a scalar, say $b$, is $b^{-1}$. For example, the inverse of $b = 3$ is $3^{-1} = {1/3}$. Also, $b*b^{-1} = 1$.
+
+In matrix algebra, the inverse of a matrix is another matrix.
+
+For example, the inverse of $A$ is $A^{-1}$, and $AA^{-1} = A{^-1}A = I$. Note that $A must be a square matrix.
+
+$A$
+
+```{r}
+MA <- matrix(data = 1:4, 
+             nrow = 2, 
+             ncol = 2,
+             byrow = TRUE)
+MA
+```
+
+$A^{-1}$
+
+```{r}
+MA_up_to_minus_one <- matrix(data = c(-2, 1, 1.5, -0.5),
+                             ncol = 2,
+                             nrow = 2,
+                             byrow =TRUE)
+MA_up_to_minus_one
+```
+
+```{r}
+MA %*% MA_up_to_minus_one
+```
+
+
+![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_8.png)
+
+**Finding the inverse**
+
+For a 2x2 matrix, there is a simple formula.
+
+![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_9.png)
+
+For larger matrix we rely on R.
+
+Exercices
+
+```{r}
+MA <- matrix(data = 1:4,
+             nrow = 2,
+             ncol = 2,
+             byrow = TRUE)
+solve(MA)
+```
+
+```{r}
+MA %*% solve(MA)
+```
+
+```{r}
+solve(MA) %*% MA
+```
+
+```{r}
+round(solve(MA) %*% MA, 2)
+```
+
+In R the `solve()` inverts a matrix. The `solve(MA, Mb)`, function can also be used to *solve* for $x$ in $Ax = b$ since $A^{-1}Ax = A^{-1}b \rightarrow Ix = A^{-1}b \rightarrow A^{-1}b$
+
+Example with `gpa` dataset
+
+- Find $(X'X)^{-1}$
+- Find $(X'X)^{-1}X'Y$
+
+```{r}
+solve(t(X) %*% X)
+```
+
+```{r}
+solve(t(X) %*% X) %*% t(X) %*% Y
+```
+
+Thus, $$(X'X)^{-1}X'Y = \begin{bmatrix} \hat{\beta}_0 \\ \hat{\beta}_1 \end{bmatrix} $$, where $\hat{\beta}_0$ and $\hat{\beta}_1$ are the estimated intercept and slope coefficients in a simple linear regression model.
+
+We can confirm by making a fitted model.
+
+```{r}
+mod.fit <- lm(CollegeGPA ~ HSGPA, data = gpa)
+mod.fit$coefficients
+```
+
+**Trace**
+
+Suppose a square matrix $A$
+
+Trace - The trace of a square matrix $A$ is defined as $tr(A) = \overset{p}{\underset{i=1}{\sum}} a_{ij} = a_{11} + a_{22} + ... a_{pp}$; i.e., the sum of a square matrix diagonal elements. 
+
+```{r}
+MA <- matrix(data = 1:4,
+             nrow = 2, 
+             ncol =2,
+             byrow = TRUE)
+MA
+```
+
+```{r}
+diag(MA)
+```
+
+```{r}
+sum(diag(MA))
+```
+
+**Determinant**
+
+The determinant of a square matrix $A$ is $|A| = \overset{p}{\underset{i=1}{\sum}} a_{ij}A_{ij} where A_{1j} = (-1)^{1+j}|A^{1j}|$ and $A^{1j}$ is obtained from $A$ by deleting its first row and its $j^{th}$ columns.
+
+The determinant for a 2x2 matrix is defined as
+
+$$\begin{bmatrix} a_{11} \ a_{12} \\ a_{21} \ a_{22} \end{bmatrix} = a_{11}a_{22} - a_{12}a_{21}$$
+
+The determinant for a 3x3 matrix can be defined as
+
+$$\begin{bmatrix} a_{11} \ a_{12} \ a_{13} \\ a_{21} \ a_{22} \ a_{23} \\ a_{31} \ a_{32} \ a_{33} \end{bmatrix} = a_{11} \begin{bmatrix} a_{22} \ a_{23} \\ a_{32} \ a_{33} \end{bmatrix} - a_{12}  \begin{bmatrix} a_{21} \ a_{23} \\ a_{31} \ a_{33}  \end{bmatrix} + a_{13} \begin{bmatrix} a_{21} \ a_{22} \\ a_{31} \ a_{32} \end{bmatrix}$$
+
+```{r}
+MA <- matrix(data = c(1, 2, 3, 4),
+             nrow = 2,
+             ncol = 2,
+             byrow = TRUE)
+MA
+```
+
+```{r}
+det(MA)
+```
+
+**Eingenvalues and eigenvectors**
 
