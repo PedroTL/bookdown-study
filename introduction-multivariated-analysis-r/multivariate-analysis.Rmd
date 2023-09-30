@@ -1,0 +1,280 @@
+---
+title: ""
+author: ""
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Multivariate Analysis
+
+We have many variables with corresponding data, so we want to make sense of them.
+
+### 1. Introduction - Background
+
+-   Matrix Algebra
+-   Summary Statistics
+    -   Matrix Algebra
+    -   Multivariate Normal Distribution
+
+#### 1.1 Introduction to Matrix Algebra
+
+What is Matrix?
+
+-   A way to group number or symbols together, where you have rows and columns
+-   A matrix is a rectangular array of elements arranged in rows and columns
+
+The dimension of a matrix is giving by:
+
+-   Rows
+-   Columns
+-   Rows X Columns $r x c$
+
+Here we have a 3x2 Matrix
+
+```{r}
+matrix(data = c(1, 2, 3, 4, 5, 6), 
+       nrow = 3, 
+       ncol = 2)
+```
+
+Rather than using numbers, we can represent parts of a matrix (and the matrix itself) by symbols.
+
+Example:
+
+![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_1.png)
+
+Where $a_{ij}$ is the row $i$ and column $j$ element of $A$. $a_{11}$ is often called $(1,1)$ element of $A$, $a_{12}$ is the $(1,2)$ element of \$A.
+
+When writing in hand we cannot bold the letter $A$ so we use the underlined $\underline{A}$
+
+Square matrix is $r x c$ where $r = c$
+
+**Vector** - A $r x 1$ is a *column vector*
+
+**Vector** - A $1 x r$ is a *row vector*
+
+Both being a special case matrix.
+
+```{r}
+matrix(data = c(1, 2, 3),
+       ncol = 1,
+       nrow = 3)
+```
+
+**Transpose** - Is when we interchange the rows and columns of a matrix or vector
+
+Example:
+
+![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_2.png)
+
+```{r}
+matrix(data = c(1, 2, 3, 4, 5, 6),
+       nrow = 2,
+       ncol = 3)
+```
+
+```{r}
+matrix(data = c(1, 2, 3, 4, 5, 6),
+       nrow = 3,
+       ncol = 2)
+```
+
+$A$ is 2x3 and $A'$ is a 3x2. The $'$ symbol indicates a transpose, and it is said as the word *prime*. Thus, the transpose of $A$ is *A prime*.
+
+##### 1.1.1 Introduction to Matrix Algebra - Matrix addition and subtraction
+
+Adding or subtraction the corresponding elements of matrices *with the same dimension*.
+
+Example
+
+```{r}
+MA <- matrix(data = c(1, 2, 3, 5, 6, 7), 
+             nrow = 2,
+             ncol = 3,
+             byrow = TRUE)
+
+MB <- matrix(data = c(-1, 10, -1, 5, 5, 8),
+             nrow = 2,
+             ncol = 3,
+             byrow = TRUE)
+MA
+MB
+```
+
+Then $A + B$ is:
+
+```{r}
+MA + MB
+```
+
+and $A - B$ is:
+
+```{r}
+MA - MB
+```
+
+`byrow` by default is set to `FALSE`. Thus, the number would be entered into the matrix by columns. Example
+
+```{r}
+MX <- matrix(data = c(1, 2, 3, 5, 6, 7), 
+             nrow = 2,
+             ncol = 3,
+             byrow = FALSE)
+MX
+class(MX)
+```
+
+A transpose of a matri can be done using the `t()` function.
+
+```{r}
+t(MX)
+```
+
+##### 1.1.2 Matrix multiplication
+
+**Scalar** - Is a 1x1 matrix
+
+Multiplied a matrix by a scalar
+
+![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_3.png) When $A$ is equal to:
+
+```{r}
+MA <- matrix(data = 1:6, 
+             nrow = 2, 
+             ncol = 3,
+             byrow = TRUE)
+```
+
+and $c = 2$, then $2A$ is:
+
+```{r}
+MA*2
+```
+
+**Multiplying two matrices**
+
+If we want to multiply $A$ for $B$ $A*B$ we first need the number of columns of $A$ to be the same as the number of rows from $B$. So $A_{rows} = B_{columns}$.
+
+Example
+
+$A$ is a 2x3 and $B$ is a $3x10$, then you can multiply this matrices. However, if $B$ is a 4x10 instead, these matrices cannot be multiplied.
+
+The resulting dimentions of $C = A*B$:
+
+-   The number of rows of $A$ is the number of rows of $C$.
+-   The number of columns of $B$ is the number of rows of $C$
+
+![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_4.png)
+
+```{r}
+MA <- matrix(data = 1:6,
+             nrow = 2,
+             ncol = 3,
+             byrow = TRUE)
+
+MB <- matrix(data = c(3, 0, 1, 2, 0, 1),
+             ncol = 2,
+             nrow = 3,
+             byrow = TRUE)
+
+MA
+MB
+```
+
+```{r}
+MC_1 = MA%*%MB
+MC_1
+```
+
+The *cross product* of the rows of $A$ and the columns of $B$ are taken to form $C$.
+
+Being $MA*MC \neq MB*MC$
+
+```{r}
+MC_2 = MB%*%MA
+MC_2
+```
+
+The notation `%*%` is used to multiplied matrices and vectors, where `*` stays to perform elementwise multiplications, the $(i,j)$ elements of each matrix are multiplied together.
+
+Multiplying vectors with other vector or matrices in R can be confusing because no row or column dimensions are given for a vector object. Example
+
+```{r}
+MX <- c(1, 2, 3)
+```
+
+```{r}
+MX%*%MX
+MA%*%MX
+```
+
+How does R know that we want $MX'MX$ instead of $MXMX'$ when we have not told R that $MX$ is a 3x1?
+
+Similarly, how does R know that $MA*MX$ is a 2x1. From `R Help` `%*%`
+
+*Multiplies two matrices, if they are conformable. If one argument is a vector, it will be promoted to either a row or column matrix to make the two arguments conformable. If both are vectors it will return the inner product.*
+
+An inner product produces a scalar value. If you wanted a $MXMX'$, one can use the outer product `%o%`
+
+```{r}
+MX%o%MX
+```
+
+Exercices
+
+- Find $X'$, $X'X$, $X'Y$ and $Y'Y$
+
+```{r}
+data(mtcars)
+head(mtcars)
+```
+
+Where `mpg` is $X$ and `drat` is $Y$ 
+
+```{r}
+X <- cbind(1, mtcars$mpg)
+head(X)
+```
+
+```{r}
+Y <- mtcars$drat
+head(Y)
+```
+
+Finding $X'$
+
+```{r}
+t(X)
+```
+
+Finding $X'X$
+
+![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_5.png)
+
+```{r}
+t(X) %*% X
+```
+
+Finding $X'Y$
+
+![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_6.png)
+
+```{r}
+t(X) %*% Y
+```
+
+Finding $Y'Y$
+
+![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_7.png)
+
+```{r}
+t(Y) %*% Y
+```
+
+- `cbind()` combines items by *columns*
+- `rbind()` combines items by *rows*
+
