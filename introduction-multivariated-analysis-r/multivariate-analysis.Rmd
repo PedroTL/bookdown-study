@@ -45,7 +45,8 @@ Rather than using numbers, we can represent parts of a matrix (and the matrix it
 
 Example:
 
-![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_1.png)
+
+$$A = \begin{bmatrix} a_{11} \ a_{12} \ a_{13} \\ a_{21} \ a_{22} \ a_{23} \end{bmatrix}$$
 
 Where $a_{ij}$ is the row $i$ and column $j$ element of $A$. $a_{11}$ is often called $(1,1)$ element of $A$, $a_{12}$ is the $(1,2)$ element of \$A.
 
@@ -70,6 +71,11 @@ matrix(data = c(1, 2, 3),
 Example:
 
 ![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_2.png)
+
+$$A = \begin{bmatrix} a_{11} \ a_{12} \ a_{13} \\ a_{21} \ a_{22} \ a_{23} \end{bmatrix}$$
+
+$$A' = \begin{bmatrix} a_{11} \ a_{21} \\ a_{12} \ a_{22} \\ a_{13} \ a_{23} \end{bmatrix}$$
+
 
 ```{r}
 matrix(data = c(1, 2, 3, 4, 5, 6),
@@ -140,7 +146,9 @@ t(MX)
 
 Multiplied a matrix by a scalar
 
-![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_3.png) When $A$ is equal to:
+$$cA = \begin{bmatrix} ca_{11} \ ca_{22} \ ca_{13} \\ ca_{21} \ ca_{22} \ ca_{23} \end{bmatrix}$$
+
+Where $c$ is the scalar. When $A$ is equal to
 
 ```{r}
 MA <- matrix(data = 1:6, 
@@ -169,7 +177,9 @@ The resulting dimentions of $C = A*B$:
 - The number of columns of $B$ is the number of rows of $C$
 - In a 2x3 * 3x10 the result matrix will be 2x10
 
-![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_4.png)
+$$C = AB = \begin{bmatrix} 1 \ 2 \ 3 \\ 4 \ 5 \ 6 \end{bmatrix} * \begin{bmatrix} 3 \ 0 \\ 1 \ 2 \ \\ 0 \ 1 \end{bmatrix}$$
+
+$$= \begin{bmatrix} 1*3 + 2*1 + 3*0 \ 1*0 + 2*2 + 3*1 \\ 4*3 +5*1 +6*0 \ 4*3 + 5*1 + 6*0 \end{bmatrix} = \begin{bmatrix} 5 \ 7 \\ 17 \ 16 \end{bmatrix}$$
 
 ```{r}
 MA <- matrix(data = 1:6,
@@ -455,6 +465,11 @@ diag(MA)
 sum(diag(MA))
 ```
 
+The covariance `cov()` is simillar to the correlation `corr()`. What changes is that the `cov()` is not bounded to -1 and 1. 
+
+$$corr(x_1, x_2) = \frac{cov(x_1, x_2) }{(\sqrt(var(x_1) * \sqrt(var(x_2))}$$
+Taking the sum of the diagonal of a covariance matrix would tell all the variability of the data, important for the PCA analysis. 
+
 **Determinant**
 
 The determinant of a square matrix $A$ is $|A| = \overset{p}{\underset{i=1}{\sum}} a_{ij}A_{ij} where A_{1j} = (-1)^{1+j}|A^{1j}|$ and $A^{1j}$ is obtained from $A$ by deleting its first row and its $j^{th}$ columns.
@@ -463,9 +478,18 @@ The determinant for a 2x2 matrix is defined as
 
 $$\begin{bmatrix} a_{11} \ a_{12} \\ a_{21} \ a_{22} \end{bmatrix} = a_{11}a_{22} - a_{12}a_{21}$$
 
+That is, the product of the diagonal elements $a_{11}, a_{22}$ minus the product of the off diagonal elements $a_{12}, a_{21}$
+
 The determinant for a 3x3 matrix can be defined as
 
 $$\begin{bmatrix} a_{11} \ a_{12} \ a_{13} \\ a_{21} \ a_{22} \ a_{23} \\ a_{31} \ a_{32} \ a_{33} \end{bmatrix} = a_{11} \begin{bmatrix} a_{22} \ a_{23} \\ a_{32} \ a_{33} \end{bmatrix} - a_{12}  \begin{bmatrix} a_{21} \ a_{23} \\ a_{31} \ a_{33}  \end{bmatrix} + a_{13} \begin{bmatrix} a_{21} \ a_{22} \\ a_{31} \ a_{32} \end{bmatrix}$$
+In 3x3 matrix we form 2x2 matrices with elements of the 3x3 matrix. For instance, the $$\begin{bmatrix} a_{22} \ a_{23} \\ a_{32} \ a_{33} \end{bmatrix}$$
+
+is an extracted of the 3x3 matrix and is being multiplied by the first element of the original 3x3 matrix $a_{11}$. This multiplications happens with the element that is not in the same row or column of the extracted matrix.
+
+Fallowing, the $$\begin{bmatrix} a_{21} \ a_{23} \\ a_{31} \ a_{33}  \end{bmatrix}$$
+
+is and extracted of the 3x3 matrix and fallow the same pattern, being multiplied by the $a_{12}$ element, that is not in the same row or column of the extracted matrix from the 3x3 matrix
 
 ```{r}
 MA <- matrix(data = c(1, 2, 3, 4),
@@ -481,3 +505,48 @@ det(MA)
 
 **Eingenvalues and eigenvectors**
 
+Suppose we have a pxp matrix $A$, being square matrix.
+
+$$A = \begin{bmatrix} a_{11} \ a_{12} \ ... \ a_{1p} \\ a_{21} \ a_{22} \ ... \ a_{2p} \\ ... \\ a_{p1} \ a_{p2} \ a_{pp} \end{bmatrix}$$
+
+Eingenvalues - Are the roots of the polynomial equation defined by $|A - \lambdaI| = 0$ where $I$ is an identity matrix and $\lambda$ is a constant. We then find the determinant of that, set all to zero and solved to $\lambda$. The $\lambda$ we find in the end is the *Eingenvalues*
+
+if $p = 2$, then the eigenvalues are the roots of
+
+$$\begin{bmatrix} a_{11} \ a_{12} \\ a_{21} \ a_{22} \end{bmatrix} - \begin{bmatrix} \lambda \ 0 \\ 0 \ \lambda \end{bmatrix} = \begin{bmatrix} a_{11} - \lambda \ a_{12} \\ a_{21} \ a_{22} - \lambda \end{bmatrix}$$
+
+$$= (a_{11} - \lambda) (a_{22} - \lambda) - a_{21}a_{12}$$
+
+$$= \lambda^2 - \lambda(a_{11} + a_{22}) - (a_{21}a_{12} - a_{11}a_{22}) = 0$$
+
+Using the quadratic formula, we obtain
+
+$$\lambda = \frac {a_{11} + a_{22} \pm \sqrt{(a_{11} + a_{22})^2 + 4(a_{21}a_{12} - a_{11}a_{22})}} 2 $$
+
+In general, the eigenvalues are the p roots of $c_{1}\lambda^{p} + c_{2}\lambda^{p-1} + c_{3}\lambda^{p-2} + ... + c_{p}\lambda + c_{p+1} = 0$ where $c_i$ for $i = 1, ..., p+1$ denote constants.
+
+When $A$ is symmetric matrix, the eigenvalues are real numbers and can be ordered from largest to smallest as $\lambda_1 \ge \lambda_2 \ge ... \ge \lambda_p$ where $\lambda_1$ is the largest.
+
+```{r}
+MA <- matrix(data = c(1, 0.5, 0.5, 1.25),
+             nrow = 2, 
+             ncol = 2,
+             byrow = TRUE)
+MA
+```
+
+```{r}
+save_eigen <- eigen(MA)
+save_eigen
+```
+
+```{r}
+save_eigen$values
+save_eigen$vectors
+```
+
+$$\lambda = \frac {2.25 \pm \sqrt{(2.25^2 + 4(0.25 - 1.25))}} 2$$ 
+
+This is equal to $1.6404$ and $0.6096$
+
+Eigenvectors - Each eigenvalue of $A$ has a corresponding nonzero vector $b$ called an eigenvector that satisfies $Ab = \lambda b$
