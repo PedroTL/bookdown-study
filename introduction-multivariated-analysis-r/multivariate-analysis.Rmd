@@ -509,7 +509,7 @@ Suppose we have a pxp matrix $A$, being square matrix.
 
 $$A = \begin{bmatrix} a_{11} \ a_{12} \ ... \ a_{1p} \\ a_{21} \ a_{22} \ ... \ a_{2p} \\ ... \\ a_{p1} \ a_{p2} \ a_{pp} \end{bmatrix}$$
 
-Eingenvalues - Are the roots of the polynomial equation defined by $|A - \lambdaI| = 0$ where $I$ is an identity matrix and $\lambda$ is a constant. We then find the determinant of that, set all to zero and solved to $\lambda$. The $\lambda$ we find in the end is the *Eingenvalues*
+Eingenvalues - Are the roots of the polynomial equation defined by $|A - \lambdaI| = 0$ where $I$ is an identity matrix and $\lambda$ is a constant. We then find the determinant of that, set all to zero and solved for $\lambda$. The $\lambda$ we find in the end is the *Eingenvalues*
 
 if $p = 2$, then the eigenvalues are the roots of
 
@@ -549,4 +549,9 @@ $$\lambda = \frac {2.25 \pm \sqrt{(2.25^2 + 4(0.25 - 1.25))}} 2$$
 
 This is equal to $1.6404$ and $0.6096$
 
-Eigenvectors - Each eigenvalue of $A$ has a corresponding nonzero vector $b$ called an eigenvector that satisfies $Ab = \lambda b$
+Eigenvectors - Each eigenvalue of $A$ has a corresponding nonzero vector $b$ called an eigenvector that satisfies $Ab = \lambda b$. If i take $Ab$ where $b$ is an eigenvector this will be equal to $\lambda b$. So, values of $b$ that satisfied this relationship are called eigenvectors.
+
+Eigenvectors for a particular eigenvalue are not unique. They are also given as having a length of 1. When two eigenvalues are not equal, their corresponding eigenvecctors are orthogonal (i.e., $b_{i}'b_j = 0$).
+
+If i would take the trace of matrix $A$ that is the sum of the eigenvalues $tr(A) = \sum{\lambda_i}$
+

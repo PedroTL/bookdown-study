@@ -861,6 +861,76 @@ MA</code></pre>
 <pre class="r"><code>det(MA)</code></pre>
 <pre><code>## [1] -2</code></pre>
 <p><strong>Eingenvalues and eigenvectors</strong></p>
+<p>Suppose we have a pxp matrix <span class="math inline">\(A\)</span>,
+being square matrix.</p>
+<p><span class="math display">\[A = \begin{bmatrix} a_{11} \ a_{12} \
+... \ a_{1p} \\ a_{21} \ a_{22} \ ... \ a_{2p} \\ ... \\ a_{p1} \ a_{p2}
+\ a_{pp} \end{bmatrix}\]</span></p>
+<p>Eingenvalues - Are the roots of the polynomial equation defined by
+<span class="math inline">\(|A - \lambdaI| = 0\)</span> where <span class="math inline">\(I\)</span> is an identity matrix and <span class="math inline">\(\lambda\)</span> is a constant. We then find the
+determinant of that, set all to zero and solved for <span class="math inline">\(\lambda\)</span>. The <span class="math inline">\(\lambda\)</span> we find in the end is the
+<em>Eingenvalues</em></p>
+<p>if <span class="math inline">\(p = 2\)</span>, then the eigenvalues
+are the roots of</p>
+<p><span class="math display">\[\begin{bmatrix} a_{11} \ a_{12} \\
+a_{21} \ a_{22} \end{bmatrix} - \begin{bmatrix} \lambda \ 0 \\ 0 \
+\lambda \end{bmatrix} = \begin{bmatrix} a_{11} - \lambda \ a_{12} \\
+a_{21} \ a_{22} - \lambda \end{bmatrix}\]</span></p>
+<p><span class="math display">\[= (a_{11} - \lambda) (a_{22} - \lambda)
+- a_{21}a_{12}\]</span></p>
+<p><span class="math display">\[= \lambda^2 - \lambda(a_{11} + a_{22}) -
+(a_{21}a_{12} - a_{11}a_{22}) = 0\]</span></p>
+<p>Using the quadratic formula, we obtain</p>
+<p><span class="math display">\[\lambda = \frac {a_{11} + a_{22} \pm
+\sqrt{(a_{11} + a_{22})^2 + 4(a_{21}a_{12} - a_{11}a_{22})}} 2
+\]</span></p>
+<p>In general, the eigenvalues are the p roots of <span class="math inline">\(c_{1}\lambda^{p} + c_{2}\lambda^{p-1} +
+c_{3}\lambda^{p-2} + ... + c_{p}\lambda + c_{p+1} = 0\)</span> where
+<span class="math inline">\(c_i\)</span> for <span class="math inline">\(i = 1, ..., p+1\)</span> denote constants.</p>
+<p>When <span class="math inline">\(A\)</span> is symmetric matrix, the
+eigenvalues are real numbers and can be ordered from largest to smallest
+as <span class="math inline">\(\lambda_1 \ge \lambda_2 \ge ... \ge
+\lambda_p\)</span> where <span class="math inline">\(\lambda_1\)</span>
+is the largest.</p>
+<pre class="r"><code>MA &lt;- matrix(data = c(1, 0.5, 0.5, 1.25),
+             nrow = 2, 
+             ncol = 2,
+             byrow = TRUE)
+MA</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]  1.0 0.50
+## [2,]  0.5 1.25</code></pre>
+<pre class="r"><code>save_eigen &lt;- eigen(MA)
+save_eigen</code></pre>
+<pre><code>## eigen() decomposition
+## $values
+## [1] 1.6403882 0.6096118
+## 
+## $vectors
+##           [,1]       [,2]
+## [1,] 0.6154122 -0.7882054
+## [2,] 0.7882054  0.6154122</code></pre>
+<pre class="r"><code>save_eigen$values</code></pre>
+<pre><code>## [1] 1.6403882 0.6096118</code></pre>
+<pre class="r"><code>save_eigen$vectors</code></pre>
+<pre><code>##           [,1]       [,2]
+## [1,] 0.6154122 -0.7882054
+## [2,] 0.7882054  0.6154122</code></pre>
+<p><span class="math display">\[\lambda = \frac {2.25 \pm \sqrt{(2.25^2
++ 4(0.25 - 1.25))}} 2\]</span></p>
+<p>This is equal to <span class="math inline">\(1.6404\)</span> and
+<span class="math inline">\(0.6096\)</span></p>
+<p>Eigenvectors - Each eigenvalue of <span class="math inline">\(A\)</span> has a corresponding nonzero vector
+<span class="math inline">\(b\)</span> called an eigenvector that
+satisfies <span class="math inline">\(Ab = \lambda b\)</span>. If i take
+<span class="math inline">\(Ab\)</span> where <span class="math inline">\(b\)</span> is an eigenvector this will be equal to
+<span class="math inline">\(\lambda b\)</span>. So, values of <span class="math inline">\(b\)</span> that satisfied this relationship are
+called eigenvectors.</p>
+<p>Eigenvectors for a particular eigenvalue are not unique. They are
+also given as having a length of 1. When two eigenvalues are not equal,
+their corresponding eigenvecctors are orthogonal (i.e., <span class="math inline">\(b_{i}&#39;b_j = 0\)</span>).</p>
+<p>If i would take the trace of matrix <span class="math inline">\(A\)</span> that is the sum of the eigenvalues
+<span class="math inline">\(tr(A) = \sum{\lambda_i}\)</span></p>
 </div>
 </div>
 </div>
