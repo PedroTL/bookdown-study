@@ -70,8 +70,6 @@ matrix(data = c(1, 2, 3),
 
 Example:
 
-![](C:\Users\pedro\Documents\GitHub\bookdown-study\introduction-multivariated-analysis-r\images\matrix_2.png)
-
 $$A = \begin{bmatrix} a_{11} \ a_{12} \ a_{13} \\ a_{21} \ a_{22} \ a_{23} \end{bmatrix}$$
 
 $$A' = \begin{bmatrix} a_{11} \ a_{21} \\ a_{12} \ a_{22} \\ a_{13} \ a_{23} \end{bmatrix}$$
